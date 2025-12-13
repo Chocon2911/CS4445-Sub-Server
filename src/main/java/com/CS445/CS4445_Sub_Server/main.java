@@ -9,5 +9,4 @@ public class Cs4445SubServerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(Cs4445SubServerApplication.class, args);
 	}
-
 }
