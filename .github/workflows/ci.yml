@@ -113,15 +113,39 @@ jobs:
 
       - name: Test Docker image
         run: |
+          # Run container with H2 in-memory database for testing
           docker run -d --name test-container \
+            -e SPRING_PROFILES_ACTIVE=test \
+            -e SPRING_DATASOURCE_URL=jdbc:h2:mem:testdb \
+            -e SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver \
             -p 8080:8080 \
             cs4445-sub-server:test
 
-          # Wait for application to start
-          timeout 60 sh -c 'until docker logs test-container 2>&1 | grep -q "Started"; do sleep 2; done'
+          # Wait for application to start (increased timeout to 120s)
+          echo "Waiting for application to start..."
+          timeout 120 sh -c 'until docker logs test-container 2>&1 | grep -q "Started.*Application"; do echo -n "."; sleep 3; done' || {
+            echo "Application failed to start. Container logs:"
+            docker logs test-container
+            docker stop test-container
+            docker rm test-container
+            exit 1
+          }
+          echo ""
+          echo "Application started successfully!"
+
+          # Wait a bit more for full initialization
+          sleep 5
 
           # Test health endpoint
-          curl -f http://localhost:8080/actuator/health || exit 1
+          echo "Testing health endpoint..."
+          curl -f http://localhost:8080/actuator/health || {
+            echo "Health check failed. Container logs:"
+            docker logs test-container
+            docker stop test-container
+            docker rm test-container
+            exit 1
+          }
+          echo "Health check passed!"
 
           # Cleanup
           docker stop test-container
