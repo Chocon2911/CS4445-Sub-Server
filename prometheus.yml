@@ -1,0 +1,44 @@
+# Prometheus Configuration for CS4445 Sub Server Monitoring
+
+global:
+  scrape_interval: 15s # Scrape metrics every 15 seconds
+  evaluation_interval: 15s # Evaluate rules every 15 seconds
+  external_labels:
+    monitor: 'cs4445-monitor'
+
+# Alerting configuration (optional)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          instance: 'prometheus-server'
+
+  # Spring Boot Application
+  - job_name: 'spring-boot-app'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 10s # More frequent scraping for the app
+    static_configs:
+      - targets: ['host.docker.internal:8080'] # For Docker on Windows/Mac
+        labels:
+          application: 'CS4445-Sub-Server'
+          environment: 'development'
+      # If running on Linux, use this instead:
+      # - targets: ['172.17.0.1:8080']
+      #   labels:
+      #     application: 'CS4445-Sub-Server'
+      #     environment: 'development'
+
+  # PostgreSQL (if you add postgres_exporter later)
+  - job_name: 'postgresql'
+    static_configs:
+      - targets: []
+        labels:
+          database: 'mydatabase'

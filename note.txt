@@ -1,0 +1,1 @@
+ssh -p 1424 -i ~/.ssh/ckey-deploy root@n1.ckey.vn
