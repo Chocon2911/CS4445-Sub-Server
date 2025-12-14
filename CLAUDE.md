@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 This is a Spring Boot 3.5.8 subscription server application for the CS4445 course project. The application uses:
-- **Java 25** as the target JVM version
+- **Java 21** (LTS) as the target JVM version
 - **Maven** for build management
 - **PostgreSQL** as the database (via Docker Compose)
 - **Spring Data JPA** for database access
