@@ -15,6 +15,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Make Maven wrapper executable
+        run: chmod +x mvnw
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -65,6 +68,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for better relevancy
+
+      - name: Make Maven wrapper executable
+        run: chmod +x mvnw
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
