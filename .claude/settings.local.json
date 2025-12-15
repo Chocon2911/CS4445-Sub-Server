@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh -p 2942 -i ~/.ssh/ckey-deploy root@n1.ckey.vn:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}
