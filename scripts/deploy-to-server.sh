@@ -48,12 +48,21 @@ fi
 ENVIRONMENT=${ENVIRONMENT:-production}
 SSH_PORT=${SSH_PORT:-22}
 
+# Detect if this is a CKey.com server and set appropriate compose file
+if [[ "$SERVER_IP" == *"ckey.vn"* ]]; then
+    COMPOSE_FILE="docker-compose.ckey.yml"
+    print_info "Detected CKey.com server - using host networking"
+else
+    COMPOSE_FILE="docker-compose.prod.yml"
+fi
+
 print_info "Starting deployment to $SERVER_IP"
 print_info "User: $DEPLOY_USER"
 print_info "Path: $DEPLOY_PATH"
 print_info "Image: $IMAGE_TAG"
 print_info "Environment: $ENVIRONMENT"
 print_info "SSH Port: $SSH_PORT"
+print_info "Compose File: $COMPOSE_FILE"
 
 # SSH configuration
 SSH_KEY="${HOME}/.ssh/deploy_key"
@@ -80,8 +89,8 @@ fi
 # Step 2: Backup current deployment
 print_info "Step 2/7: Creating backup..."
 run_ssh "cd $DEPLOY_PATH && \
-    if [ -f docker-compose.prod.yml ]; then \
-        docker compose -f docker-compose.prod.yml ps > deployment-backup-\$(date +%Y%m%d-%H%M%S).txt; \
+    if [ -f $COMPOSE_FILE ]; then \
+        docker compose -f $COMPOSE_FILE ps > deployment-backup-\$(date +%Y%m%d-%H%M%S).txt; \
         echo 'Backup created'; \
     else \
         echo 'No existing deployment to backup'; \
@@ -95,21 +104,21 @@ run_ssh "cd $DEPLOY_PATH && \
     git checkout main && \
     git pull origin main && \
     echo 'IMAGE_TAG=$IMAGE_TAG' > .env.deploy && \
-    docker compose -f docker-compose.prod.yml pull app"
+    docker compose -f $COMPOSE_FILE pull app"
 print_success "Latest code and image pulled"
 
 # Step 4: Stop old containers (graceful)
 print_info "Step 4/7: Stopping old containers..."
 run_ssh "cd $DEPLOY_PATH && \
-    docker compose -f docker-compose.prod.yml stop app || true"
+    docker compose -f $COMPOSE_FILE stop app || true"
 print_success "Old containers stopped"
 
 # Step 5: Start new containers
 print_info "Step 5/7: Starting new containers..."
 run_ssh "cd $DEPLOY_PATH && \
     export IMAGE_TAG=$IMAGE_TAG && \
-    docker compose -f docker-compose.prod.yml up -d app && \
-    docker compose -f docker-compose.prod.yml ps"
+    docker compose -f $COMPOSE_FILE up -d app && \
+    docker compose -f $COMPOSE_FILE ps"
 print_success "New containers started"
 
 # Step 6: Wait for application to be ready

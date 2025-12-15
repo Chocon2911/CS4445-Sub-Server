@@ -1,0 +1,118 @@
+# CKey.com Docker Compose Configuration
+# This file is specifically for CKey.com servers which require host networking
+# due to containerized VPS limitations (no iptables/bridge networking support)
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cs4445-postgres
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-mydatabase}
+      - POSTGRES_USER=${POSTGRES_USER:-myuser}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secret}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-myuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: ghcr.io/${GITHUB_REPOSITORY:-cs4445/cs4445-sub-server}:${IMAGE_TAG:-latest}
+    container_name: cs4445-app
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      # Database configuration (use localhost with host networking)
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/${POSTGRES_DB:-mydatabase}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-myuser}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-secret}
+
+      # JPA configuration
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${DDL_AUTO:-validate}
+      - SPRING_JPA_SHOW_SQL=false
+
+      # Actuator configuration
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus,metrics
+      - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=when-authorized
+
+      # Application configuration
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE:-production}
+      - JAVA_OPTS=-Xmx${MAX_HEAP:-512m} -Xms${MIN_HEAP:-256m}
+      - SERVER_PORT=8080
+
+      # Logging
+      - LOGGING_LEVEL_ROOT=${LOG_LEVEL:-INFO}
+      - LOGGING_LEVEL_COM_CS445=${APP_LOG_LEVEL:-INFO}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "prometheus.scrape=true"
+      - "prometheus.port=8080"
+      - "prometheus.path=/actuator/prometheus"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: cs4445-prometheus
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-15d}'
+      - '--web.enable-lifecycle'
+      - '--web.listen-address=0.0.0.0:9090'
+    depends_on:
+      - app
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: cs4445-grafana
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=${GRAFANA_URL:-http://localhost:3000}
+      - GF_SERVER_HTTP_PORT=3000
+      - GF_INSTALL_PLUGINS=${GRAFANA_PLUGINS:-}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+# Note: With host networking, all containers share the host's network namespace
+# - No port mapping needed (services listen directly on host ports)
+# - Services communicate via localhost
+# - External access uses CKey.com port forwarding (e.g., 2945 -> 8080)
