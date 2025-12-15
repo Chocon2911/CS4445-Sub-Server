@@ -99,11 +99,16 @@ print_success "Backup completed"
 
 # Step 3: Pull latest code and image
 print_info "Step 3/7: Pulling latest code and Docker image..."
+
+# Extract just the tag from the full image reference (e.g., "main" from "ghcr.io/repo:main")
+# If IMAGE_TAG contains full image path, extract the tag; otherwise use as-is
+TAG_ONLY=$(echo "$IMAGE_TAG" | grep -oP '(?<=:)[^:]+$' || echo "$IMAGE_TAG")
+
 run_ssh "cd $DEPLOY_PATH && \
     git fetch origin && \
     git checkout main && \
     git pull origin main && \
-    echo 'IMAGE_TAG=$IMAGE_TAG' > .env.deploy && \
+    echo 'IMAGE_TAG=$TAG_ONLY' > .env.deploy && \
     docker compose -f $COMPOSE_FILE pull app"
 print_success "Latest code and image pulled"
 
@@ -116,7 +121,7 @@ print_success "Old containers stopped"
 # Step 5: Start new containers
 print_info "Step 5/7: Starting new containers..."
 run_ssh "cd $DEPLOY_PATH && \
-    export IMAGE_TAG=$IMAGE_TAG && \
+    export IMAGE_TAG=$TAG_ONLY && \
     docker compose -f $COMPOSE_FILE up -d app && \
     docker compose -f $COMPOSE_FILE ps"
 print_success "New containers started"
