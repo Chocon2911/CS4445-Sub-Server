@@ -528,7 +528,26 @@ What V2 enables:
 4. **WSL users**: Check file system location
 5. **Deployment**: Prefer parallel for staging, blue-green for production
 6. **Documentation**: Point to organized `docs/` structure
-7. **Beginner-friendly**: Start with `docs/1-getting-started/`
+7. **Beginner-friendly**: Start with `docs/0-setup-checklist/` or `docs/1-getting-started/`
+
+### Server Environment Specifics (IMPORTANT!)
+
+**Ubuntu Version:** Ubuntu Jammy (22.04) - Minimal installation
+
+**Key limitations:**
+- ❌ NO `nano` pre-installed (command not found error)
+- ❌ NO `sudo` needed (login as root directly)
+- ✅ `vi`/`vim` available (but harder for beginners)
+- ✅ `cat`, `echo` available (use for file creation)
+
+**User:** `root` (CKey.com default, not ubuntu)
+
+**When writing documentation/commands:**
+- ✅ Use `echo "content" >> file` instead of nano
+- ✅ Use `cat > file << 'EOF'` heredoc for multi-line files
+- ✅ Don't use `sudo` (already root)
+- ✅ Mention `apt install -y nano` as optional if user prefers
+- ✅ Provide vi/vim alternative with basic instructions
 
 ### Key files to reference:
 - **Workflow**: `.github/workflows/cd-v2-multi-server.yml`
@@ -538,13 +557,36 @@ What V2 enables:
 - **Quick start**: `docs/1-getting-started/CKEY-QUICKSTART.md`
 - **Deployment**: `docs/3-deployment/V2-MULTI-SERVER-DEPLOYMENT-SUMMARY.md`
 
+### User's Actual Setup (Reference)
+
+**Servers:** 5 total CKey.com VPS
+- 3 Staging servers (n1, n2, n3)
+- 2 Production servers (n4, n5)
+
+**Example server configuration:**
+```
+Server: n1.ckey.vn
+SSH Port: 3494 (maps to 22)
+App Port: 3497 (maps to 8080)
+Combined format: n1.ckey.vn:3494:3497
+```
+
+**GitHub Secrets format:**
+```bash
+STAGING_SERVERS="n1.ckey.vn:3494:3497,n2.ckey.vn:3495:3498,n3.ckey.vn:3496:3499"
+PRODUCTION_SERVERS="n4.ckey.vn:4494:4497,n5.ckey.vn:4495:4498"
+DEPLOY_USER="root"
+DEPLOY_PATH="/app/cs4445-sub-server"
+```
+
 ### Common user scenarios:
-1. **New user**: Direct to BEGINNER-SSH-SETUP-GUIDE.md
+1. **New user**: Direct to `docs/0-setup-checklist/QUICK-START-CHECKLIST.md`
 2. **CKey.com user**: Emphasize combined format with TWO ports
 3. **Port configuration**: Use SERVER-CONFIGURATION.md
 4. **WSL user**: Mention file system difference
 5. **Deployment issues**: Check health checks and logs
-6. **SSH issues**: Check port, username, and key location
+6. **SSH issues**: Check port, username (root), and key location
+7. **"nano not found"**: Use echo/cat heredoc instead
 
 ---
 

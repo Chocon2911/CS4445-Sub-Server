@@ -11,6 +11,45 @@ Complete documentation for the CS4445 Subscription Server project with multi-ser
   - Troubleshooting common issues
   - ~45 min read
 
+## 🚀 Quick Setup (Start Here!)
+
+### ✨ [0. Setup Checklist](./0-setup-checklist/) ⭐ **NEW! START HERE**
+**Everything you need in one place - from renting servers to deploying.**
+
+- **[QUICK-START-CHECKLIST.md](./0-setup-checklist/QUICK-START-CHECKLIST.md)** ⭐ **BEST FOR BEGINNERS**
+  - Complete checklist format with checkboxes
+  - All steps from zero to deployed
+  - Track your progress as you go
+  - ~2-3 hours total
+
+- **[NEW-SERVER-SETUP.md](./0-setup-checklist/NEW-SERVER-SETUP.md)**
+  - Step-by-step server configuration
+  - CKey.com specific instructions
+  - Docker installation
+  - Firewall setup
+  - ~20-30 min per server
+
+- **[GITHUB-SECRETS-SETUP.md](./0-setup-checklist/GITHUB-SECRETS-SETUP.md)**
+  - Add all GitHub secrets
+  - Combined server format (V2.1)
+  - Verification steps
+  - ~10-15 min
+
+- **[TESTING-DEPLOYMENT.md](./0-setup-checklist/TESTING-DEPLOYMENT.md)**
+  - Comprehensive testing guide
+  - Health checks for all servers
+  - API endpoint testing
+  - Troubleshooting common issues
+  - ~15-20 min
+
+**Why start here?**
+- 📋 Checklist format is easy to follow
+- ✅ Track progress with checkboxes
+- 🎯 Everything in the right order
+- 🔗 Links to detailed guides when needed
+
+---
+
 ## 📚 Documentation Structure
 
 ### 🚀 [1. Getting Started](./1-getting-started/)
@@ -136,19 +175,24 @@ Legacy documentation (V1) for reference.
 
 ## 🎯 Quick Navigation
 
-### For Complete Beginners
+### For Complete Beginners (Recommended Path)
+1. ⭐ **Start:** [QUICK-START-CHECKLIST.md](./0-setup-checklist/QUICK-START-CHECKLIST.md) - Follow this step-by-step
+2. [NEW-SERVER-SETUP.md](./0-setup-checklist/NEW-SERVER-SETUP.md) - When setting up each server
+3. [GITHUB-SECRETS-SETUP.md](./0-setup-checklist/GITHUB-SECRETS-SETUP.md) - When adding GitHub secrets
+4. [TESTING-DEPLOYMENT.md](./0-setup-checklist/TESTING-DEPLOYMENT.md) - Verify everything works
+5. Deploy! 🚀
+
+### For CKey.com Users (Quick Path)
+1. ⭐ [QUICK-START-CHECKLIST.md](./0-setup-checklist/QUICK-START-CHECKLIST.md) (~2-3 hours)
+2. [SERVER-CONFIGURATION.md](./4-github/SERVER-CONFIGURATION.md) - Combined server format reference
+3. [TESTING-DEPLOYMENT.md](./0-setup-checklist/TESTING-DEPLOYMENT.md) - Verify deployment
+
+### Alternative: Traditional Step-by-Step
 1. Read [ARCHITECTURE.md](./ARCHITECTURE.md) - Understand the system
 2. Read [BEGINNER-SSH-SETUP-GUIDE.md](./1-getting-started/BEGINNER-SSH-SETUP-GUIDE.md)
 3. Read [VISUAL-SETUP-GUIDE.md](./1-getting-started/VISUAL-SETUP-GUIDE.md)
 4. Follow [CKEY-QUICKSTART.md](./1-getting-started/CKEY-QUICKSTART.md)
 5. Set up [GitHub Secrets](./4-github/github-setup-guide-v2.md)
-6. Deploy! 🚀
-
-### For CKey.com Users
-1. [CKEY-QUICKSTART.md](./1-getting-started/CKEY-QUICKSTART.md) (30 minutes)
-2. [SERVER-CONFIGURATION.md](./4-github/SERVER-CONFIGURATION.md) ⭐ (port setup)
-3. [ckey-server-setup-guide.md](./2-server-setup/ckey-server-setup-guide.md) (detailed)
-4. [V2-MULTI-SERVER-DEPLOYMENT-SUMMARY.md](./3-deployment/V2-MULTI-SERVER-DEPLOYMENT-SUMMARY.md)
 
 ### For Advanced Users
 1. [ARCHITECTURE.md](./ARCHITECTURE.md) - Deep dive into system architecture
@@ -285,13 +329,16 @@ When adding new documentation:
 
 **Version:** 2.1 (Combined Server Format)
 **Created:** 2025-12-14
-**Last Updated:** 2025-12-14
+**Last Updated:** 2025-12-15
 **Project:** CS4445 Subscription Server
 
 **Quick Links:**
 - [Main Repository](../)
+- ⭐ [Quick Start Checklist](./0-setup-checklist/QUICK-START-CHECKLIST.md) - **START HERE!**
 - [Architecture Guide](./ARCHITECTURE.md) ⭐ **Essential Reading**
-- [Server Configuration V2.1](./4-github/SERVER-CONFIGURATION.md) ⭐ **NEW!**
-- [Getting Started](./1-getting-started/BEGINNER-SSH-SETUP-GUIDE.md)
+- [New Server Setup](./0-setup-checklist/NEW-SERVER-SETUP.md) - Server configuration
+- [GitHub Secrets Setup](./0-setup-checklist/GITHUB-SECRETS-SETUP.md) - GitHub configuration
+- [Testing Deployment](./0-setup-checklist/TESTING-DEPLOYMENT.md) - Verify deployment
+- [Server Configuration V2.1](./4-github/SERVER-CONFIGURATION.md) - Combined format reference
 - [API Docs](./6-api/server-control-api.md)
-- [Troubleshooting](./1-getting-started/BEGINNER-SSH-SETUP-GUIDE.md#troubleshooting)
+- [Troubleshooting](./0-setup-checklist/TESTING-DEPLOYMENT.md#troubleshooting)
