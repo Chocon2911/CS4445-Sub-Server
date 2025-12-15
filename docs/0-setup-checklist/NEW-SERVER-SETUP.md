@@ -171,7 +171,75 @@ docker compose version
 
 **This takes:** ~3-5 minutes
 
-✅ **Success:** Docker is installed!
+---
+
+### Step 5b: Configure Docker for CKey.com (IMPORTANT!)
+
+**CKey.com servers run in containers**, so Docker needs special configuration:
+
+```bash
+# Create Docker daemon configuration
+mkdir -p /etc/docker
+
+cat > /etc/docker/daemon.json << 'EOF'
+{
+  "iptables": false,
+  "ip-forward": false,
+  "ip-masq": false,
+  "bridge": "none",
+  "storage-driver": "vfs"
+}
+EOF
+
+# Verify the configuration
+cat /etc/docker/daemon.json
+```
+
+**Why this is needed:**
+- CKey.com doesn't allow iptables manipulation
+- Bridge networking requires iptables
+- Must use host networking instead
+
+---
+
+### Step 5c: Start Docker Daemon
+
+```bash
+# Kill any existing Docker processes
+pkill -9 dockerd
+pkill -9 containerd
+sleep 3
+
+# Start Docker daemon in background
+dockerd > /tmp/docker.log 2>&1 &
+
+# Wait for Docker to start
+sleep 15
+
+# Verify Docker is running
+docker version
+```
+
+**Expected output:**
+```
+Client: Docker Engine - Community
+ Version:           27.x.x
+ ...
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          27.x.x
+  ...
+```
+
+✅ **Success:** Docker is running!
+
+**If Docker fails to start**, check logs:
+```bash
+cat /tmp/docker.log
+```
+
+See [SERVER-DEPLOYMENT-TROUBLESHOOTING.md](../SERVER-DEPLOYMENT-TROUBLESHOOTING.md) for detailed troubleshooting.
 
 ---
 
@@ -273,16 +341,46 @@ cat .env
 
 ---
 
-### Step 9: Test Docker Compose
+### Step 9: Modify Docker Compose for CKey.com
+
+**IMPORTANT:** Because CKey.com requires host networking, you need to modify `docker-compose.prod.yml`:
 
 ```bash
-# Test if docker compose config is valid
-docker compose -f docker-compose.prod.yml config
+# Backup original file
+cp docker-compose.prod.yml docker-compose.prod.yml.backup
 
+# Add network_mode: host to all services
+# You'll need to do this manually or use sed
+```
+
+**Quick fix with sed:**
+```bash
+# Add network_mode: host to each service
+# (This is a simplified example - manual editing is recommended)
+# See SERVER-DEPLOYMENT-TROUBLESHOOTING.md for complete examples
+```
+
+**Or manually edit** to add `network_mode: host` to each service:
+```yaml
+services:
+  app:
+    image: ...
+    network_mode: host  # Add this line
+    # Remove or comment out 'ports:' section (not needed with host mode)
+```
+
+**Test configuration:**
+```bash
+docker compose -f docker-compose.prod.yml config
 # Should show the full configuration without errors
 ```
 
-✅ **Success:** No errors in configuration!
+✅ **Success:** Configuration is valid!
+
+**Note:** With host networking:
+- No port mapping needed (app runs directly on server ports)
+- Use `localhost` instead of service names for inter-service communication
+- See [SERVER-DEPLOYMENT-TROUBLESHOOTING.md](../SERVER-DEPLOYMENT-TROUBLESHOOTING.md) for complete examples
 
 ---
 
@@ -316,22 +414,38 @@ ufw status
 **Check everything is ready:**
 
 ```bash
-# 1. Check Docker
+# 1. Check Docker daemon is running
+docker ps
+# Should show: CONTAINER ID   IMAGE   ... (empty list is fine)
+# If error: "Cannot connect to daemon" - restart Docker daemon
+
+# 2. Check Docker version
 docker --version
 docker compose version
 
-# 2. Check directory
+# 3. Check Docker configuration
+cat /etc/docker/daemon.json
+# Should show: iptables: false, bridge: none, etc.
+
+# 4. Check directory
 pwd  # Should be: /app/cs4445-sub-server
 ls -la  # Should show project files
 
-# 3. Check environment file
+# 5. Check environment file
 cat .env  # Should show your configurations
 
-# 4. Check SSH key
+# 6. Check SSH key
 ls -la ~/.ssh/authorized_keys  # Should exist
 
-# 5. Check git
+# 7. Check git
 git status  # Should show clean working tree
+```
+
+**If Docker daemon not running:**
+```bash
+dockerd > /tmp/docker.log 2>&1 &
+sleep 15
+docker ps
 ```
 
 ✅ **All checks passed!** Server is ready for deployment!
@@ -376,6 +490,20 @@ After completing this server setup:
 
 ## 🐛 Troubleshooting
 
+### 📚 Complete Troubleshooting Guide
+
+**For comprehensive Docker troubleshooting on CKey.com**, see:
+**[SERVER-DEPLOYMENT-TROUBLESHOOTING.md](../SERVER-DEPLOYMENT-TROUBLESHOOTING.md)**
+
+This guide covers:
+- Docker daemon permission errors
+- iptables issues
+- Network configuration
+- Container startup problems
+- Complete working examples
+
+---
+
 ### Issue: "nano: command not found" or "sudo: command not found"
 
 **Cause:** Your server uses minimal Ubuntu Jammy (22.04) without these tools pre-installed
@@ -410,6 +538,62 @@ vi ~/.ssh/authorized_keys
 # Press 'i' to enter insert mode
 # Paste your content
 # Press 'Esc' then type ':wq' and press Enter to save
+```
+
+---
+
+### Issue: "Cannot connect to the Docker daemon" or Docker not running
+
+**Error:**
+```
+Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+```
+
+**Cause:** Docker daemon not started or crashed on CKey.com servers
+
+**Solution:**
+
+```bash
+# Step 1: Create Docker configuration (if not already done)
+mkdir -p /etc/docker
+cat > /etc/docker/daemon.json << 'EOF'
+{
+  "iptables": false,
+  "ip-forward": false,
+  "ip-masq": false,
+  "bridge": "none",
+  "storage-driver": "vfs"
+}
+EOF
+
+# Step 2: Kill any stuck processes
+pkill -9 dockerd
+pkill -9 containerd
+sleep 3
+
+# Step 3: Start Docker daemon
+dockerd > /tmp/docker.log 2>&1 &
+
+# Step 4: Wait for startup
+sleep 15
+
+# Step 5: Verify it's running
+docker ps
+```
+
+**If still failing:**
+```bash
+# Check the logs
+cat /tmp/docker.log | tail -50
+
+# Look for errors about iptables or permissions
+# See SERVER-DEPLOYMENT-TROUBLESHOOTING.md for detailed solutions
+```
+
+**Quick verification:**
+```bash
+# Check if dockerd process is running
+ps aux | grep dockerd
 ```
 
 ---
