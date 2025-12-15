@@ -2,7 +2,20 @@
   "permissions": {
     "allow": [
       "Bash(ssh -p 2942 -i ~/.ssh/ckey-deploy root@n1.ckey.vn:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(gh run view:*)",
+      "Bash(scp:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(gh workflow run:*)",
+      "Bash(gh run list:*)",
+      "Bash(chmod:*)",
+      "Bash(git add:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git update-index:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)"
     ]
   }
 }
