@@ -4,7 +4,7 @@ Complete documentation for the CS4445 Subscription Server project with multi-ser
 
 ## 🏗️ Architecture
 
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** ⭐ **Essential Reading**
+- **[ARCHITECTURE.md](./9-reference/ARCHITECTURE.md)** ⭐ **Essential Reading**
   - Complete system architecture guide
   - How database, API, and monitoring work together
   - Data flow diagrams and real-world examples
@@ -173,6 +173,45 @@ Legacy documentation (V1) for reference.
 - `project-overview.md` - Original project overview
 - `summary_v1.md` - V1 summary
 
+### 🆘 [8. Troubleshooting](./8-troubleshooting/)
+Comprehensive troubleshooting guides for all common issues.
+
+- **[DEPLOYMENT-STATUS.md](./8-troubleshooting/DEPLOYMENT-STATUS.md)** ⚠️ **CRITICAL**
+  - Current deployment status
+  - CKey.com Docker limitation (`unshare: operation not permitted`)
+  - 4 potential solutions with pros/cons
+  - **READ THIS if deployment is failing**
+  - ~10 min read
+
+- **[SERVER-DEPLOYMENT-TROUBLESHOOTING.md](./8-troubleshooting/SERVER-DEPLOYMENT-TROUBLESHOOTING.md)**
+  - Docker daemon issues on CKey.com
+  - Container startup problems
+  - Network configuration
+  - Permission errors
+  - ~15 min read
+
+- **[GITHUB-ACTIONS-FIXES.md](./8-troubleshooting/GITHUB-ACTIONS-FIXES.md)**
+  - GitHub Actions workflow errors
+  - Secret configuration issues
+  - Build and deployment failures
+  - ~10 min read
+
+- **[TROUBLESHOOTING-CI-CD-FIXES.md](./8-troubleshooting/TROUBLESHOOTING-CI-CD-FIXES.md)**
+  - CI/CD pipeline troubleshooting
+  - Image build and push issues
+  - Deployment pipeline problems
+  - ~15 min read
+
+### 📚 [9. Reference](./9-reference/)
+Technical reference and architecture documentation.
+
+- **[ARCHITECTURE.md](./9-reference/ARCHITECTURE.md)** ⭐ **Essential Reading**
+  - Complete system architecture guide
+  - How database, API, and monitoring work together
+  - Data flow diagrams and real-world examples
+  - Technology stack and design decisions
+  - ~45 min read
+
 ## 🎯 Quick Navigation
 
 ### For Complete Beginners (Recommended Path)
@@ -188,17 +227,21 @@ Legacy documentation (V1) for reference.
 3. [TESTING-DEPLOYMENT.md](./0-setup-checklist/TESTING-DEPLOYMENT.md) - Verify deployment
 
 ### Alternative: Traditional Step-by-Step
-1. Read [ARCHITECTURE.md](./ARCHITECTURE.md) - Understand the system
+1. Read [ARCHITECTURE.md](./9-reference/ARCHITECTURE.md) - Understand the system
 2. Read [BEGINNER-SSH-SETUP-GUIDE.md](./1-getting-started/BEGINNER-SSH-SETUP-GUIDE.md)
 3. Read [VISUAL-SETUP-GUIDE.md](./1-getting-started/VISUAL-SETUP-GUIDE.md)
 4. Follow [CKEY-QUICKSTART.md](./1-getting-started/CKEY-QUICKSTART.md)
 5. Set up [GitHub Secrets](./4-github/github-setup-guide-v2.md)
 
 ### For Advanced Users
-1. [ARCHITECTURE.md](./ARCHITECTURE.md) - Deep dive into system architecture
+1. [ARCHITECTURE.md](./9-reference/ARCHITECTURE.md) - Deep dive into system architecture
 2. [multi-server-deployment-guide-v2.md](./3-deployment/multi-server-deployment-guide-v2.md)
 3. [github-runner-setup-guide-v2.md](./3-deployment/github-runner-setup-guide-v2.md)
 4. [ci-cd-guide.md](./4-github/ci-cd-guide.md)
+
+### For Troubleshooting
+1. ⚠️ [DEPLOYMENT-STATUS.md](./8-troubleshooting/DEPLOYMENT-STATUS.md) - Current critical issue
+2. [8-troubleshooting/](./8-troubleshooting/) - All troubleshooting guides
 
 ### For API Integration
 1. [server-control-api.md](./6-api/server-control-api.md)
@@ -269,15 +312,19 @@ Legacy documentation (V1) for reference.
 ## 🆘 Getting Help
 
 ### Common Issues
-1. **Can't SSH to server**: Check [BEGINNER-SSH-SETUP-GUIDE.md](./1-getting-started/BEGINNER-SSH-SETUP-GUIDE.md) Issue #6, #7
-2. **WSL problems**: See WSL section in beginner guide
-3. **CKey.com port issues**: Check port mapping in CKey panel
-4. **Deployment fails**: See troubleshooting in [multi-server-deployment-guide-v2.md](./3-deployment/multi-server-deployment-guide-v2.md)
+1. **Deployment completely blocked**: ⚠️ See [DEPLOYMENT-STATUS.md](./8-troubleshooting/DEPLOYMENT-STATUS.md) for CKey.com Docker issue
+2. **Can't SSH to server**: Check [BEGINNER-SSH-SETUP-GUIDE.md](./1-getting-started/BEGINNER-SSH-SETUP-GUIDE.md) Issue #6, #7
+3. **Docker daemon issues**: See [SERVER-DEPLOYMENT-TROUBLESHOOTING.md](./8-troubleshooting/SERVER-DEPLOYMENT-TROUBLESHOOTING.md)
+4. **GitHub Actions fails**: Check [GITHUB-ACTIONS-FIXES.md](./8-troubleshooting/GITHUB-ACTIONS-FIXES.md)
+5. **WSL problems**: See WSL section in beginner guide
+6. **CKey.com port issues**: Check port mapping in CKey panel
 
 ### Troubleshooting Guides
+- **Current Deployment Issues**: [8-troubleshooting/](./8-troubleshooting/) ⚠️ **Start here if blocked**
 - SSH Issues: [BEGINNER-SSH-SETUP-GUIDE.md](./1-getting-started/BEGINNER-SSH-SETUP-GUIDE.md) § Troubleshooting
-- Deployment Issues: [V2-MULTI-SERVER-DEPLOYMENT-SUMMARY.md](./3-deployment/V2-MULTI-SERVER-DEPLOYMENT-SUMMARY.md) § Troubleshooting
-- CI/CD Issues: [ci-cd-guide.md](./4-github/ci-cd-guide.md) § Troubleshooting
+- Server & Docker Issues: [SERVER-DEPLOYMENT-TROUBLESHOOTING.md](./8-troubleshooting/SERVER-DEPLOYMENT-TROUBLESHOOTING.md)
+- GitHub Actions Issues: [GITHUB-ACTIONS-FIXES.md](./8-troubleshooting/GITHUB-ACTIONS-FIXES.md)
+- CI/CD Pipeline Issues: [TROUBLESHOOTING-CI-CD-FIXES.md](./8-troubleshooting/TROUBLESHOOTING-CI-CD-FIXES.md)
 
 ## 📊 Estimated Reading Time
 
@@ -335,10 +382,11 @@ When adding new documentation:
 **Quick Links:**
 - [Main Repository](../)
 - ⭐ [Quick Start Checklist](./0-setup-checklist/QUICK-START-CHECKLIST.md) - **START HERE!**
-- [Architecture Guide](./ARCHITECTURE.md) ⭐ **Essential Reading**
+- [Architecture Guide](./9-reference/ARCHITECTURE.md) ⭐ **Essential Reading**
 - [New Server Setup](./0-setup-checklist/NEW-SERVER-SETUP.md) - Server configuration
 - [GitHub Secrets Setup](./0-setup-checklist/GITHUB-SECRETS-SETUP.md) - GitHub configuration
 - [Testing Deployment](./0-setup-checklist/TESTING-DEPLOYMENT.md) - Verify deployment
 - [Server Configuration V2.1](./4-github/SERVER-CONFIGURATION.md) - Combined format reference
+- ⚠️ [Current Deployment Issue](./8-troubleshooting/DEPLOYMENT-STATUS.md) - **Critical CKey.com Docker issue**
+- [All Troubleshooting](./8-troubleshooting/) - Complete troubleshooting guides
 - [API Docs](./6-api/server-control-api.md)
-- [Troubleshooting](./0-setup-checklist/TESTING-DEPLOYMENT.md#troubleshooting)
