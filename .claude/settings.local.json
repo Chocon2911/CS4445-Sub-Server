@@ -15,7 +15,8 @@
       "Bash(git ls-files:*)",
       "Bash(git update-index:*)",
       "Bash(git checkout:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(gh run watch:*)"
     ]
   }
 }
