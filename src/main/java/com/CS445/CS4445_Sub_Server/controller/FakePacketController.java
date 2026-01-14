@@ -13,7 +13,6 @@ import com.CS445.CS4445_Sub_Server.dto.FakePacketRequest;
 import com.CS445.CS4445_Sub_Server.dto.FakePacketResponse;
 import com.CS445.CS4445_Sub_Server.service.FakePacketService;
 import com.CS445.CS4445_Sub_Server.service.MetricsService;
-import com.CS445.CS4445_Sub_Server.service.PacketErrorLogService;
 import com.CS445.CS4445_Sub_Server.service.ServerStateService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +30,6 @@ public class FakePacketController {
     private final FakePacketService fakePacketService;
     private final ServerStateService serverStateService;
     private final MetricsService metricsService;
-    private final PacketErrorLogService packetErrorLogService;
     private final ObjectMapper objectMapper;
 
     @PostMapping("/fakePacket")
@@ -51,10 +49,6 @@ public class FakePacketController {
             if (!serverStateService.isServerOpen()) {
                 log.warn("Server is CLOSED. Rejecting packet request: {}", request.getPacketId());
                 metricsService.incrementTotalErrors("server_closed");
-
-                // Log server closed error to database
-                Exception serverClosedError = new IllegalStateException("Server is currently closed");
-                packetErrorLogService.logError(serverClosedError, request, "/api/v1/fakePacket", "POST", HttpStatus.SERVICE_UNAVAILABLE.value());
 
                 FakePacketResponse rejectedResponse = FakePacketResponse.builder()
                         .packetId(request.getPacketId())
@@ -88,9 +82,6 @@ public class FakePacketController {
         } catch (Exception e) {
             log.error("Error processing packet {}", request.getPacketId(), e);
             metricsService.incrementTotalErrors("exception");
-
-            // Log error to database
-            packetErrorLogService.logError(e, request, "/api/v1/fakePacket", "POST", HttpStatus.INTERNAL_SERVER_ERROR.value());
 
             FakePacketResponse errorResponse = FakePacketResponse.builder()
                     .packetId(request.getPacketId())
@@ -158,38 +149,5 @@ public class FakePacketController {
         String summary = metricsService.getMetricsSummary();
         log.info("Metrics summary requested: {}", summary);
         return ResponseEntity.ok(summary);
-    }
-
-    @GetMapping("/errors/recent")
-    public ResponseEntity<?> getRecentErrors() {
-        try {
-            return ResponseEntity.ok(packetErrorLogService.getRecentErrors());
-        } catch (Exception e) {
-            log.error("Error fetching recent errors", e);
-            packetErrorLogService.logError(e, "Error fetching recent errors from database");
-            return ResponseEntity.internalServerError().body("Error fetching error logs: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/errors/packet")
-    public ResponseEntity<?> getErrorsByPacketId(@RequestParam String packetId) {
-        try {
-            return ResponseEntity.ok(packetErrorLogService.getErrorsByPacketId(packetId));
-        } catch (Exception e) {
-            log.error("Error fetching errors for packet {}", packetId, e);
-            packetErrorLogService.logError(e, "Error fetching errors by packet ID: " + packetId);
-            return ResponseEntity.internalServerError().body("Error fetching error logs: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/errors/type")
-    public ResponseEntity<?> getErrorsByType(@RequestParam String errorType) {
-        try {
-            return ResponseEntity.ok(packetErrorLogService.getErrorsByType(errorType));
-        } catch (Exception e) {
-            log.error("Error fetching errors of type {}", errorType, e);
-            packetErrorLogService.logError(e, "Error fetching errors by type: " + errorType);
-            return ResponseEntity.internalServerError().body("Error fetching error logs: " + e.getMessage());
-        }
     }
 }
