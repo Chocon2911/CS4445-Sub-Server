@@ -2,9 +2,12 @@ package com.CS445.CS4445_Sub_Server;
 
 import com.CS445.CS4445_Sub_Server.controller.FakePacketController;
 import com.CS445.CS4445_Sub_Server.dto.FakePacketRequest;
+import com.CS445.CS4445_Sub_Server.dto.FakePacketResponse;
 import com.CS445.CS4445_Sub_Server.service.FakePacketService;
+import com.CS445.CS4445_Sub_Server.service.MetricsService;
 import com.CS445.CS4445_Sub_Server.service.ServerStateService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import io.micrometer.core.instrument.Timer;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,6 +45,27 @@ class EdgeCaseAndErrorHandlingTest {
 
     @MockBean
     private ServerStateService serverStateService;
+
+    @MockBean
+    private MetricsService metricsService;
+
+    @BeforeEach
+    void setUp() {
+        // Mock the Timer.Sample to avoid NPE in controller
+        Timer.Sample mockSample = mock(Timer.Sample.class);
+        when(metricsService.startRequestLatencyTimer()).thenReturn(mockSample);
+
+        // Mock the fakePacketService to return a default response
+        FakePacketResponse defaultResponse = FakePacketResponse.builder()
+                .packetId("test")
+                .status("SUCCESS")
+                .processingTimeMs(100L)
+                .cpuCycles(1000L)
+                .memoryUsedBytes(1024L)
+                .result("Packet processed successfully")
+                .build();
+        when(fakePacketService.processFakePacket(any(FakePacketRequest.class))).thenReturn(defaultResponse);
+    }
 
     @Test
     @DisplayName("Should handle empty packet ID")

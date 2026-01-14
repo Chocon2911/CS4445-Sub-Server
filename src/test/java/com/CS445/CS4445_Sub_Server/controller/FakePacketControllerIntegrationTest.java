@@ -3,6 +3,7 @@ package com.CS445.CS4445_Sub_Server.controller;
 import com.CS445.CS4445_Sub_Server.dto.FakePacketRequest;
 import com.CS445.CS4445_Sub_Server.dto.FakePacketResponse;
 import com.CS445.CS4445_Sub_Server.service.FakePacketService;
+import com.CS445.CS4445_Sub_Server.service.MetricsService;
 import com.CS445.CS4445_Sub_Server.service.ServerStateService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,9 @@ class FakePacketControllerIntegrationTest {
 
     @MockBean
     private ServerStateService serverStateService;
+
+    @MockBean
+    private MetricsService metricsService;
 
     private FakePacketRequest testRequest;
     private FakePacketResponse testResponse;
