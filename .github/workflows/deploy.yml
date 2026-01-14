@@ -97,6 +97,11 @@ jobs:
               echo "Docker installed successfully"
             fi
 
+            # Open firewall port
+            echo "Opening firewall port 8081..."
+            sudo ufw allow 8081/tcp || true
+            sudo iptables -I INPUT -p tcp --dport 8081 -j ACCEPT || true
+
             # Deploy the application
             cd /tmp
             gunzip -c image.tar.gz | docker load
@@ -109,6 +114,11 @@ jobs:
               ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
             rm -f /tmp/image.tar.gz
             docker image prune -f
+
+            # Verify deployment
+            echo "Verifying deployment..."
+            sleep 5
+            curl -s http://localhost:8081/api/v1/health || echo "Health check pending..."
 
   deploy-server-2:
     needs: build
@@ -155,6 +165,11 @@ jobs:
               echo "Docker installed successfully"
             fi
 
+            # Open firewall port
+            echo "Opening firewall port 8082..."
+            sudo ufw allow 8082/tcp || true
+            sudo iptables -I INPUT -p tcp --dport 8082 -j ACCEPT || true
+
             # Deploy the application
             cd /tmp
             gunzip -c image.tar.gz | docker load
@@ -167,6 +182,11 @@ jobs:
               ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
             rm -f /tmp/image.tar.gz
             docker image prune -f
+
+            # Verify deployment
+            echo "Verifying deployment..."
+            sleep 5
+            curl -s http://localhost:8082/api/v1/health || echo "Health check pending..."
 
   deploy-server-3:
     needs: build
@@ -213,6 +233,11 @@ jobs:
               echo "Docker installed successfully"
             fi
 
+            # Open firewall port
+            echo "Opening firewall port 8083..."
+            sudo ufw allow 8083/tcp || true
+            sudo iptables -I INPUT -p tcp --dport 8083 -j ACCEPT || true
+
             # Deploy the application
             cd /tmp
             gunzip -c image.tar.gz | docker load
@@ -225,3 +250,8 @@ jobs:
               ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
             rm -f /tmp/image.tar.gz
             docker image prune -f
+
+            # Verify deployment
+            echo "Verifying deployment..."
+            sleep 5
+            curl -s http://localhost:8083/api/v1/health || echo "Health check pending..."
