@@ -16,7 +16,7 @@ RUN chmod +x mvnw
 # Download dependencies (cached if pom.xml doesn't change)
 RUN ./mvnw dependency:go-offline -B
 
-# Copy source code
+# Copy source code (updated with truncate fix - 2025-12-21 19:25)
 COPY src ./src
 
 # Build the application (skip tests for faster builds)

@@ -1,0 +1,9 @@
+metric_type,metric_name,value,timestamp
+counter,total_requests,10,1766310772.889
+counter,total_errors,0,1766310772.891
+counter,total_connections,10,1766310772.892
+counter,jobs_processed,10,1766310772.893
+gauge,cpu_usage,0.0023744911804613293,1766310772.894
+gauge,ram_usage_bytes,56623104,1766310772.896
+gauge,current_connections,0,1766310772.897
+gauge,queue_length,0,1766310772.899

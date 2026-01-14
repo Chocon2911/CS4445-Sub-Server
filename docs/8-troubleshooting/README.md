@@ -19,6 +19,12 @@ This folder contains comprehensive troubleshooting documentation for common issu
   - Container startup issues
   - Permission errors
 
+- **[DATABASE-CONSTRAINT-FIX.md](./DATABASE-CONSTRAINT-FIX.md)** - Database constraint violation fix (NEW!)
+  - "Value too long for type character varying" error resolution
+  - String truncation implementation
+  - Docker build cache troubleshooting
+  - Complete testing and verification process
+
 ### GitHub Actions & CI/CD Troubleshooting
 
 - **[GITHUB-ACTIONS-FIXES.md](./GITHUB-ACTIONS-FIXES.md)** - GitHub Actions workflow fixes
@@ -45,6 +51,12 @@ This folder contains comprehensive troubleshooting documentation for common issu
 ### Health Check Failures
 → See [SERVER-DEPLOYMENT-TROUBLESHOOTING.md](./SERVER-DEPLOYMENT-TROUBLESHOOTING.md) - Health check section
 
+### Database "Value Too Long" Error
+→ See [DATABASE-CONSTRAINT-FIX.md](./DATABASE-CONSTRAINT-FIX.md) - Complete fix for VARCHAR constraint violations
+
+### Docker Build Not Picking Up Code Changes
+→ See [DATABASE-CONSTRAINT-FIX.md](./DATABASE-CONSTRAINT-FIX.md#docker-build-issues) - Docker cache troubleshooting
+
 ## 🆘 Getting Help
 
 1. **Check the relevant troubleshooting guide** above
@@ -60,4 +72,4 @@ This folder contains comprehensive troubleshooting documentation for common issu
 
 ---
 
-**Last Updated:** 2025-12-15
+**Last Updated:** 2025-12-21

@@ -1,0 +1,12 @@
+metric_type,metric_name,value,timestamp
+counter,total_requests,,
+counter,total_errors,,
+counter,total_connections,,
+counter,jobs_processed,,
+gauge,cpu_usage,,
+gauge,ram_usage_bytes,,
+gauge,current_connections,,
+gauge,queue_length,,
+histogram,request_latency_avg_ms,,
+histogram,response_size_avg_bytes,,
+histogram,processing_time_avg_ms,,

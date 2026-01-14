@@ -1,31 +1,36 @@
 package com.CS445.CS4445_Sub_Server.service;
 
-import com.CS445.CS4445_Sub_Server.dto.FakePacketRequest;
-import com.CS445.CS4445_Sub_Server.dto.FakePacketResponse;
-import com.CS445.CS4445_Sub_Server.entity.PacketLog;
-import com.CS445.CS4445_Sub_Server.repository.PacketLogRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.CS445.CS4445_Sub_Server.dto.FakePacketRequest;
+import com.CS445.CS4445_Sub_Server.dto.FakePacketResponse;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class FakePacketService {
 
-    private final PacketLogRepository packetLogRepository;
-
-    @Transactional
     public FakePacketResponse processFakePacket(FakePacketRequest request) {
         long startTime = System.currentTimeMillis();
+
+        // Handle null/empty packet ID
+        String packetId = (request.getPacketId() == null || request.getPacketId().trim().isEmpty())
+            ? "packet-" + UUID.randomUUID().toString()
+            : request.getPacketId();
 
         // Default values if not provided
         int cpuIntensity = request.getCpuIntensity() != null ? request.getCpuIntensity() : 5;
@@ -37,45 +42,50 @@ public class FakePacketService {
         ramIntensity = Math.max(1, Math.min(10, ramIntensity));
 
         log.info("Processing packet {} with CPU intensity: {}, RAM intensity: {}",
-                request.getPacketId(), cpuIntensity, ramIntensity);
+                packetId, cpuIntensity, ramIntensity);
 
-        // CPU-intensive operations
-        long cpuCycles = performCpuIntensiveWork(cpuIntensity);
+        try {
+            // CPU-intensive operations
+            long cpuCycles = performCpuIntensiveWork(cpuIntensity);
 
-        // RAM-intensive operations
-        long memoryUsed = performRamIntensiveWork(ramIntensity);
+            // RAM-intensive operations
+            long memoryUsed = performRamIntensiveWork(ramIntensity);
 
-        // Database operations (adds I/O load)
-        String result = performDatabaseOperations(request, cpuCycles, memoryUsed);
-
-        // Ensure minimum processing time
-        long currentTime = System.currentTimeMillis();
-        long elapsed = currentTime - startTime;
-        if (elapsed < minProcessingTime) {
-            try {
-                Thread.sleep(minProcessingTime - elapsed);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                log.warn("Processing interrupted", e);
+            // Ensure minimum processing time
+            long currentTime = System.currentTimeMillis();
+            long elapsed = currentTime - startTime;
+            if (elapsed < minProcessingTime) {
+                try {
+                    Thread.sleep(minProcessingTime - elapsed);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    log.warn("Processing interrupted", e);
+                }
             }
+
+            long totalProcessingTime = System.currentTimeMillis() - startTime;
+
+            String result = String.format("Packet %s processed successfully. CPU cycles: %d, Memory used: %d bytes",
+                    packetId, cpuCycles, memoryUsed);
+
+            return FakePacketResponse.builder()
+                    .packetId(packetId)
+                    .status("SUCCESS")
+                    .processingTimeMs(totalProcessingTime)
+                    .cpuCycles(cpuCycles)
+                    .memoryUsedBytes(memoryUsed)
+                    .result(result)
+                    .timestamp(LocalDateTime.now())
+                    .build();
+        } catch (Exception e) {
+            log.error("Error processing packet {}", packetId, e);
+            throw new RuntimeException("Failed to process packet: " + packetId, e);
         }
-
-        long totalProcessingTime = System.currentTimeMillis() - startTime;
-
-        return FakePacketResponse.builder()
-                .packetId(request.getPacketId())
-                .status("SUCCESS")
-                .processingTimeMs(totalProcessingTime)
-                .cpuCycles(cpuCycles)
-                .memoryUsedBytes(memoryUsed)
-                .result(result)
-                .timestamp(LocalDateTime.now())
-                .build();
     }
 
     private long performCpuIntensiveWork(int intensity) {
         long cycles = 0;
-        int iterations = intensity * 100000; // Scale iterations based on intensity
+        int iterations = intensity * 100000;
 
         // Prime number calculation (CPU intensive)
         List<Long> primes = new ArrayList<>();
@@ -95,6 +105,7 @@ public class FakePacketService {
             }
         } catch (NoSuchAlgorithmException e) {
             log.error("Hash algorithm not found", e);
+            throw new RuntimeException("Hash algorithm not available", e);
         }
 
         // Complex mathematical operations
@@ -121,15 +132,14 @@ public class FakePacketService {
     private long performRamIntensiveWork(int intensity) {
         long totalMemory = 0;
 
-        // Create large data structures
-        int arraySize = intensity * 100000; // Scale based on intensity
+        int arraySize = intensity * 100000;
 
         // Large ArrayList
         List<String> largeList = new ArrayList<>(arraySize);
         for (int i = 0; i < arraySize; i++) {
             largeList.add(UUID.randomUUID().toString() + "-" + i);
         }
-        totalMemory += largeList.size() * 40; // Approximate bytes
+        totalMemory += largeList.size() * 40L;
 
         // Large HashMap
         Map<String, Object> largeMap = new HashMap<>();
@@ -140,12 +150,12 @@ public class FakePacketService {
             nestedMap.put("key3", UUID.randomUUID().toString());
             largeMap.put("entry-" + i, nestedMap);
         }
-        totalMemory += largeMap.size() * 200; // Approximate bytes
+        totalMemory += largeMap.size() * 200L;
 
         // Byte arrays
         List<byte[]> byteArrays = new ArrayList<>();
         for (int i = 0; i < intensity * 100; i++) {
-            byte[] arr = new byte[10000]; // 10KB each
+            byte[] arr = new byte[10000];
             new Random().nextBytes(arr);
             byteArrays.add(arr);
             totalMemory += arr.length;
@@ -165,7 +175,7 @@ public class FakePacketService {
             }
             complexMap.put("key-" + i, list);
         }
-        totalMemory += complexMap.size() * 12000; // Approximate bytes
+        totalMemory += complexMap.size() * 12000L;
 
         // Process the data to prevent optimization
         long sum = largeList.stream()
@@ -180,33 +190,6 @@ public class FakePacketService {
 
         log.debug("RAM work completed: {} bytes allocated, checksum: {}", totalMemory, sum);
         return totalMemory;
-    }
-
-    private String performDatabaseOperations(FakePacketRequest request, long cpuCycles, long memoryUsed) {
-        // Save packet log to database
-        PacketLog log = PacketLog.builder()
-                .packetId(request.getPacketId())
-                .cpuIntensity(request.getCpuIntensity())
-                .ramIntensity(request.getRamIntensity())
-                .processingTimeMs(0L) // Will be updated if needed
-                .cpuCycles(cpuCycles)
-                .memoryUsedBytes(memoryUsed)
-                .payload(request.getPayload())
-                .result("Processed successfully")
-                .build();
-
-        packetLogRepository.save(log);
-
-        // Query database to add I/O load
-        List<PacketLog> recentLogs = packetLogRepository.findByPacketId(request.getPacketId());
-
-        // Aggregate some statistics
-        long totalCycles = recentLogs.stream()
-                .mapToLong(PacketLog::getCpuCycles)
-                .sum();
-
-        return String.format("Packet processed. Total cycles for this packet ID: %d, Logs count: %d",
-                totalCycles, recentLogs.size());
     }
 
     private boolean isPrime(long n) {

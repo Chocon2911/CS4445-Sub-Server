@@ -183,6 +183,18 @@ Comprehensive troubleshooting guides for all common issues.
   - **READ THIS if deployment is failing**
   - ~10 min read
 
+- **[DATABASE-CONSTRAINT-FIX.md](./8-troubleshooting/DATABASE-CONSTRAINT-FIX.md)** ✅ **NEW!**
+  - Complete fix for "value too long" database errors
+  - String truncation implementation guide
+  - Docker build cache troubleshooting
+  - Testing and verification procedures
+  - ~20 min read
+
+- **[QUICK-FIX-DATABASE-CONSTRAINT.md](./8-troubleshooting/QUICK-FIX-DATABASE-CONSTRAINT.md)** ⚡ **Quick Reference**
+  - Fast solution for database constraint violations
+  - Copy-paste code snippets
+  - ~5 min read
+
 - **[SERVER-DEPLOYMENT-TROUBLESHOOTING.md](./8-troubleshooting/SERVER-DEPLOYMENT-TROUBLESHOOTING.md)**
   - Docker daemon issues on CKey.com
   - Container startup problems
@@ -313,11 +325,13 @@ Technical reference and architecture documentation.
 
 ### Common Issues
 1. **Deployment completely blocked**: ⚠️ See [DEPLOYMENT-STATUS.md](./8-troubleshooting/DEPLOYMENT-STATUS.md) for CKey.com Docker issue
-2. **Can't SSH to server**: Check [BEGINNER-SSH-SETUP-GUIDE.md](./1-getting-started/BEGINNER-SSH-SETUP-GUIDE.md) Issue #6, #7
-3. **Docker daemon issues**: See [SERVER-DEPLOYMENT-TROUBLESHOOTING.md](./8-troubleshooting/SERVER-DEPLOYMENT-TROUBLESHOOTING.md)
-4. **GitHub Actions fails**: Check [GITHUB-ACTIONS-FIXES.md](./8-troubleshooting/GITHUB-ACTIONS-FIXES.md)
-5. **WSL problems**: See WSL section in beginner guide
-6. **CKey.com port issues**: Check port mapping in CKey panel
+2. **Database "value too long" error**: ✅ See [QUICK-FIX-DATABASE-CONSTRAINT.md](./8-troubleshooting/QUICK-FIX-DATABASE-CONSTRAINT.md) for immediate fix
+3. **Docker build not picking up code changes**: See [DATABASE-CONSTRAINT-FIX.md](./8-troubleshooting/DATABASE-CONSTRAINT-FIX.md#docker-build-issues)
+4. **Can't SSH to server**: Check [BEGINNER-SSH-SETUP-GUIDE.md](./1-getting-started/BEGINNER-SSH-SETUP-GUIDE.md) Issue #6, #7
+5. **Docker daemon issues**: See [SERVER-DEPLOYMENT-TROUBLESHOOTING.md](./8-troubleshooting/SERVER-DEPLOYMENT-TROUBLESHOOTING.md)
+6. **GitHub Actions fails**: Check [GITHUB-ACTIONS-FIXES.md](./8-troubleshooting/GITHUB-ACTIONS-FIXES.md)
+7. **WSL problems**: See WSL section in beginner guide
+8. **CKey.com port issues**: Check port mapping in CKey panel
 
 ### Troubleshooting Guides
 - **Current Deployment Issues**: [8-troubleshooting/](./8-troubleshooting/) ⚠️ **Start here if blocked**
@@ -376,7 +390,7 @@ When adding new documentation:
 
 **Version:** 2.1 (Combined Server Format)
 **Created:** 2025-12-14
-**Last Updated:** 2025-12-15
+**Last Updated:** 2025-12-21
 **Project:** CS4445 Subscription Server
 
 **Quick Links:**

@@ -16,7 +16,12 @@
       "Bash(git update-index:*)",
       "Bash(git checkout:*)",
       "Bash(git merge:*)",
-      "Bash(gh run watch:*)"
+      "Bash(gh run watch:*)",
+      "Bash(docker compose up:*)",
+      "Bash(docker compose:*)",
+      "Bash(./mvnw clean:*)",
+      "Bash(java -version:*)",
+      "Bash(docker run:*)"
     ]
   }
 }

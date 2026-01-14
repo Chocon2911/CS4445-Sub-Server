@@ -26,15 +26,10 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 10s # More frequent scraping for the app
     static_configs:
-      - targets: ['host.docker.internal:8080'] # For Docker on Windows/Mac
+      - targets: ['app:8080'] # App container name
         labels:
           application: 'CS4445-Sub-Server'
           environment: 'development'
-      # If running on Linux, use this instead:
-      # - targets: ['172.17.0.1:8080']
-      #   labels:
-      #     application: 'CS4445-Sub-Server'
-      #     environment: 'development'
 
   # PostgreSQL (if you add postgres_exporter later)
   - job_name: 'postgresql'

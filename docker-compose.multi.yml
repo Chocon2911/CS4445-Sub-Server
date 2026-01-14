@@ -1,0 +1,246 @@
+# Multi-Instance Docker Compose Configuration
+# Creates 5 sub-server containers on different ports (8081-8085)
+# Usage: docker-compose -f docker-compose.multi.yml up -d --build
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cs4445-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-mydatabase}
+      - POSTGRES_USER=${POSTGRES_USER:-myuser}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secret}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-myuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Sub-server instance 1 - Port 8081
+  sub-server-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cs4445-sub-server-app:latest
+    container_name: cs4445-sub-server-1
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    environment:
+      - SERVER_ID=sub-server-1
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-mydatabase}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-myuser}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-secret}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${DDL_AUTO:-update}
+      - SPRING_JPA_SHOW_SQL=false
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus,metrics
+      - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE:-development}
+      - JAVA_OPTS=-Xmx512m -Xms256m
+      - LOGGING_LEVEL_ROOT=${LOG_LEVEL:-INFO}
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Sub-server instance 2 - Port 8082
+  sub-server-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cs4445-sub-server-app:latest
+    container_name: cs4445-sub-server-2
+    restart: unless-stopped
+    ports:
+      - "8082:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    environment:
+      - SERVER_ID=sub-server-2
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-mydatabase}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-myuser}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-secret}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${DDL_AUTO:-update}
+      - SPRING_JPA_SHOW_SQL=false
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus,metrics
+      - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE:-development}
+      - JAVA_OPTS=-Xmx512m -Xms256m
+      - LOGGING_LEVEL_ROOT=${LOG_LEVEL:-INFO}
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Sub-server instance 3 - Port 8083
+  sub-server-3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cs4445-sub-server-app:latest
+    container_name: cs4445-sub-server-3
+    restart: unless-stopped
+    ports:
+      - "8083:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    environment:
+      - SERVER_ID=sub-server-3
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-mydatabase}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-myuser}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-secret}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${DDL_AUTO:-update}
+      - SPRING_JPA_SHOW_SQL=false
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus,metrics
+      - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE:-development}
+      - JAVA_OPTS=-Xmx512m -Xms256m
+      - LOGGING_LEVEL_ROOT=${LOG_LEVEL:-INFO}
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Sub-server instance 4 - Port 8084
+  sub-server-4:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cs4445-sub-server-app:latest
+    container_name: cs4445-sub-server-4
+    restart: unless-stopped
+    ports:
+      - "8084:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    environment:
+      - SERVER_ID=sub-server-4
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-mydatabase}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-myuser}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-secret}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${DDL_AUTO:-update}
+      - SPRING_JPA_SHOW_SQL=false
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus,metrics
+      - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE:-development}
+      - JAVA_OPTS=-Xmx512m -Xms256m
+      - LOGGING_LEVEL_ROOT=${LOG_LEVEL:-INFO}
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Sub-server instance 5 - Port 8085
+  sub-server-5:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cs4445-sub-server-app:latest
+    container_name: cs4445-sub-server-5
+    restart: unless-stopped
+    ports:
+      - "8085:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    environment:
+      - SERVER_ID=sub-server-5
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-mydatabase}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-myuser}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-secret}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${DDL_AUTO:-update}
+      - SPRING_JPA_SHOW_SQL=false
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus,metrics
+      - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE:-development}
+      - JAVA_OPTS=-Xmx512m -Xms256m
+      - LOGGING_LEVEL_ROOT=${LOG_LEVEL:-INFO}
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
