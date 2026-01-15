@@ -85,7 +85,7 @@ public class FakePacketService {
 
     private long performCpuIntensiveWork(int intensity) {
         long cycles = 0;
-        int iterations = intensity * 100000;
+        int iterations = intensity * 10000;  // Reduced from 100000 to 10000 (10x reduction)
 
         // Prime number calculation (CPU intensive)
         List<Long> primes = new ArrayList<>();
@@ -99,7 +99,7 @@ public class FakePacketService {
         // Hash computation (CPU intensive)
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            for (int i = 0; i < intensity * 1000; i++) {
+            for (int i = 0; i < intensity * 100; i++) {  // Reduced from 1000 to 100 (10x reduction)
                 byte[] hash = digest.digest(UUID.randomUUID().toString().getBytes());
                 cycles += hash.length;
             }
@@ -110,14 +110,14 @@ public class FakePacketService {
 
         // Complex mathematical operations
         double result = 0;
-        for (int i = 0; i < intensity * 50000; i++) {
+        for (int i = 0; i < intensity * 5000; i++) {  // Reduced from 50000 to 5000 (10x reduction)
             result += Math.sqrt(i) * Math.log(i + 1) / Math.cos(i * 0.1);
             cycles++;
         }
 
         // String manipulation (CPU intensive)
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < intensity * 10000; i++) {
+        for (int i = 0; i < intensity * 1000; i++) {  // Reduced from 10000 to 1000 (10x reduction)
             sb.append(UUID.randomUUID().toString());
             if (sb.length() > 100000) {
                 sb = new StringBuilder(sb.substring(sb.length() - 1000));
@@ -132,7 +132,7 @@ public class FakePacketService {
     private long performRamIntensiveWork(int intensity) {
         long totalMemory = 0;
 
-        int arraySize = intensity * 100000;
+        int arraySize = intensity * 10000;  // Reduced from 100000 to 10000 (10x reduction)
 
         // Large ArrayList
         List<String> largeList = new ArrayList<>(arraySize);
@@ -143,7 +143,7 @@ public class FakePacketService {
 
         // Large HashMap
         Map<String, Object> largeMap = new HashMap<>();
-        for (int i = 0; i < intensity * 10000; i++) {
+        for (int i = 0; i < intensity * 1000; i++) {  // Reduced from 10000 to 1000 (10x reduction)
             Map<String, String> nestedMap = new HashMap<>();
             nestedMap.put("key1", UUID.randomUUID().toString());
             nestedMap.put("key2", UUID.randomUUID().toString());
@@ -154,7 +154,7 @@ public class FakePacketService {
 
         // Byte arrays
         List<byte[]> byteArrays = new ArrayList<>();
-        for (int i = 0; i < intensity * 100; i++) {
+        for (int i = 0; i < intensity * 10; i++) {  // Reduced from 100 to 10 (10x reduction)
             byte[] arr = new byte[10000];
             new Random().nextBytes(arr);
             byteArrays.add(arr);
@@ -163,7 +163,7 @@ public class FakePacketService {
 
         // ConcurrentHashMap with complex objects
         Map<String, List<Map<String, Object>>> complexMap = new ConcurrentHashMap<>();
-        for (int i = 0; i < intensity * 1000; i++) {
+        for (int i = 0; i < intensity * 100; i++) {  // Reduced from 1000 to 100 (10x reduction)
             List<Map<String, Object>> list = new ArrayList<>();
             for (int j = 0; j < 10; j++) {
                 Map<String, Object> obj = new HashMap<>();
